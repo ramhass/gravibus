@@ -22,22 +22,6 @@
       margin: 1em auto;
       max-width: 600px;
       box-shadow: 0 0 15px #0ff;
-      transition: background-color 0.5s, transform 0.2s;
-    }
-    .correct {
-      background-color: #d4edda !important;
-      box-shadow: 0 0 20px #00ff88;
-    }
-    .incorrect {
-      background-color: #f8d7da !important;
-      animation: shake 0.3s;
-    }
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
     }
     button {
       background-color: #00bcd4;
@@ -72,46 +56,39 @@
     #start-btn {
       background-color: #00bcd4;
       color: white;
+      padding: 1em;
+      border-radius: 10px;
+      font-size: 1.2em;
+      cursor: pointer;
     }
-    /* Nouvelle règle pour cacher les éléments après le début du jeu */
-    .hidden {
-      display: none;
+    #ranking {
+      margin-top: 2em;
+      font-size: 1.4em;
     }
   </style>
 </head>
 <body>
   <h1>🚀 GRAVIBUS : Sauve le Bus ! 🚍</h1>
 
-  <!-- Intro et QR code, visible uniquement avant le début du jeu -->
-  <div id="intro">
-    <p style="max-width: 700px; margin: 0 auto; font-size: 1.2em; background-color: rgba(255,255,255,0.2); padding: 1em; border-radius: 10px;">
-      🔧 Le bus scolaire est en danger ! Seules tes connaissances sur la gravité et les forces peuvent le sauver. 🧠  
-      Réponds aux questions et mène ta mission à bien. Prêt(e) pour l’aventure ?
-    </p>
+  <p style="max-width: 700px; margin: 0 auto; font-size: 1.2em; background-color: rgba(255,255,255,0.2); padding: 1em; border-radius: 10px;">
+    🔧 Le bus scolaire est en danger ! Seules tes connaissances sur la gravité et les forces peuvent le sauver. 🧠  
+    Réponds aux questions et mène ta mission à bien. Prêt(e) pour l’aventure ?
+  </p>
 
-    <div id="mode-select">
-      <label for="name-input">Entrez votre nom :</label>
-      <input type="text" id="name-input" placeholder="Votre nom ici" />
-      <button id="start-btn" onclick="startGame()">Commencer</button>
-    </div>
-
-    <div style="margin-top: 3em;">
-      <h2>📱 Accède au jeu sur ton téléphone :</h2>
-      <img src="https://api.qrserver.com/v1/create-qr-code/?data=https://ramhass.github.io/gravibus/&size=200x200" alt="QR code vers Gravibus">
-      <p>Scanne le QR code ou visite :<br><a href="https://ramhass.github.io/gravibus/" style="color: #00bcd4;">https://ramhass.github.io/gravibus/</a></p>
-    </div>
+  <!-- Formulaire pour entrer le nom -->
+  <div id="mode-select">
+    <label for="name-input">Entrez votre nom :</label>
+    <input type="text" id="name-input" placeholder="Votre nom ici" />
+    <button id="start-btn" onclick="startGame()">Commencer</button>
   </div>
 
-  <!-- Le quiz qui sera affiché après le début du jeu -->
   <div class="question-box" id="quiz-box" style="display:none">
     <p id="question"></p>
     <div id="choices"></div>
   </div>
   <div id="result"></div>
-  <div id="ranking"></div>
 
-  <!-- Confetti JS CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.4.0/dist/confetti.browser.min.js"></script>
+  <div id="ranking"></div>
 
   <script>
     const questions = [
@@ -124,7 +101,12 @@
       { q: "Qu'est-ce qui ralentit un objet qui glisse ?", a: ["Le magnétisme", "Les frottements", "La lumière"], correct: 1 },
       { q: "La masse change-t-elle selon la planète ?", a: ["Oui", "Non", "Seulement le dimanche"], correct: 1 },
       { q: "Quel est l'effet d'une force sur un objet ?", a: ["Il explose", "Il change de mouvement", "Il devient invisible"], correct: 1 },
-      { q: "Quand un bus freine brusquement...", a: ["On tombe en arrière", "On est projeté en avant", "On flotte"], correct: 1 }
+      { q: "Quand un bus freine brusquement...", a: ["On tombe en arrière", "On est projeté en avant", "On flotte"], correct: 1 },
+      { q: "Que se passe-t-il dans l'espace si on pousse un objet ?", a: ["Il flotte sans s'arrêter", "Il tombe", "Il fond"], correct: 0 },
+      { q: "Quel est le contraire d'une accélération ?", a: ["Décélération", "Gravitation", "Motivation"], correct: 0 },
+      { q: "Pourquoi les astronautes flottent dans l'ISS ?", a: ["Pas de gravité locale", "L’ISS tombe en continu", "Ils sautent très haut"], correct: 1 },
+      { q: "Quel est l'effet de la gravité sur la Lune ?", a: ["6x plus faible qu’ici", "Identique à la Terre", "N’existe pas"], correct: 0 },
+      { q: "Quand deux forces opposées s’annulent ?", a: ["L’objet s’arrête ou garde son mouvement", "Il explose", "Il va en rond"], correct: 0 }
     ];
 
     let current = 0;
@@ -132,22 +114,20 @@
     let playerName = "";
     let participants = [];
 
-    // Définition de la fonction startGame() pour démarrer le jeu
+    // Définition de la fonction startGame
     function startGame() {
       playerName = document.getElementById("name-input").value;
       if (!playerName) {
         alert("Veuillez entrer un nom !");
         return;
       }
-      // Masquer l'intro et QR code, afficher le quiz
-      document.getElementById("intro").classList.add("hidden");
+
+      document.getElementById("mode-select").style.display = "none";
       document.getElementById("quiz-box").style.display = "block";
       showQuestion();
     }
 
     function showQuestion() {
-      const box = document.getElementById("quiz-box");
-      box.classList.remove("correct", "incorrect");
       document.getElementById("result").textContent = "";
       const q = questions[current];
       document.getElementById("question").textContent = `Question ${current + 1} : ${q.q}`;
@@ -163,42 +143,37 @@
     }
 
     function selectAnswer(index) {
-      const box = document.getElementById("quiz-box");
       const q = questions[current];
       const isCorrect = index === q.correct;
-      const sound = new Audio(isCorrect
-        ? 'https://freesound.org/data/previews/149/149138_2635695-lq.mp3' // Son pour bonne réponse
-        : 'https://freesound.org/data/previews/331/331912_3248244-lq.mp3'); // Son pour mauvaise réponse
+      const sound = new Audio(isCorrect ? 'https://freesound.org/data/previews/256/256113_3263906-lq.mp3' : 'https://freesound.org/data/previews/250/250629_4486188-lq.mp3');
       sound.play();
 
-      box.classList.add(isCorrect ? "correct" : "incorrect");
-
       if (isCorrect) {
-        // Animation de confettis pour une bonne réponse
-        confetti();
-      }
-
-      if (!isCorrect) {
         score++;
       }
       document.getElementById("result").textContent = isCorrect ? "✅ Bonne réponse !" : "❌ Mauvaise réponse !";
 
-      // Fixing recursion issue: Stop once all questions have been answered
       current++;
-      if (current < questions.length) {
-        setTimeout(() => showQuestion(), 1200);
-      } else {
-        document.getElementById("quiz-box").style.display = "none";
-        document.getElementById("result").textContent = `🎉 Fin de mission, ${playerName} ! Vous avez sauvé ${score}/10 parties du bus !`;
+      setTimeout(() => {
+        if (current < questions.length) {
+          showQuestion();
+        } else {
+          document.getElementById("quiz-box").style.display = "none";
+          document.getElementById("result").textContent = `🎉 Fin de mission, ${playerName} ! Vous avez sauvé ${score}/15 parties du bus !`;
 
-        participants.push({ name: playerName, score: score });
-        participants.sort((a, b) => b.score - a.score);
+          // Ajouter participant au classement
+          participants.push({ name: playerName, score: score });
 
-        let rankingText = "🏆 Classement :<br>";
-        participants.forEach((participant, index) => {
-          rankingText += `${index + 1}. ${participant.name} - ${participant.score} points<br>`;
-        });
-        document.getElementById("ranking").innerHTML = rankingText;
-      }
+          // Trier les participants par score
+          participants.sort((a, b) => b.score - a.score);
+
+          // Afficher le classement
+          let rankingText = "🏆 Classement :<br>";
+          participants.forEach((participant, index) => {
+            rankingText += `${index + 1}. ${participant.name} - ${participant.score} points<br>`;
+          });
+          document.getElementById("ranking").innerHTML = rankingText;
+        }
+      }, 1200);
     }
   </script>
