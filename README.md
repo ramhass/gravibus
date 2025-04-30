@@ -238,6 +238,19 @@
           }
         }, 1200);
       }
+
+      // Charger et afficher le classement lors du chargement de la page
+      window.onload = function() {
+        let savedScores = JSON.parse(localStorage.getItem("scores")) || [];
+        if (savedScores.length > 0) {
+          let rankingText = "🏆 Classement :<br>";
+          savedScores.sort((a, b) => b.score - a.score);
+          savedScores.forEach((participant, index) => {
+            rankingText += `${index + 1}. ${participant.name} - ${participant.score} points<br>`;
+          });
+          document.getElementById("ranking").innerHTML = rankingText;
+        }
+      };
     </script>
   </body>
 </html>
