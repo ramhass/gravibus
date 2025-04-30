@@ -138,17 +138,25 @@
         { q: "Plus un objet est lourd...", a: ["...moins la gravité agit sur lui", "...plus il va vite", "...plus la gravité agit sur lui"], correct: 2 },
         { q: "Quelle est la vitesse moyenne d'un bus ?", a: ["90 km/h", "300 km/h", "10 km/h"], correct: 0 },
         { q: "Sur la Lune, on pèse...", a: ["plus", "moins", "la même chose"], correct: 1 },
-        { q: "Que se passe-t-il dans l'espace si on pousse un objet ?", a: ["Il flotte sans s'arrêter", "Il tombe", "Il fond"], correct: 0 },
+        { q: "Que se passe-t-il dans l'espace si on pousse un objet ?", a: ["Il flotte sans s'arrêter", "Il tombe", "Il continue à se déplacer"], correct: 2 },
+        { q: "La masse change-t-elle selon la planète ?", a: ["Oui", "Non", "Cela dépend de la taille de la planète"], correct: 1 },
+        { q: "Quel est l'effet d'une force sur un objet ?", a: ["Il accélère", "Il ralentit", "Il reste immobile"], correct: 0 },
+        { q: "Pourquoi les astronautes flottent dans l'ISS ?", a: ["Parce qu'il n'y a pas de gravité", "Parce qu'ils sont en chute libre", "Parce qu'ils sont trop légers"], correct: 1 },
+        { q: "La force gravitationnelle dépend de ?", a: ["La distance entre les objets", "La vitesse des objets", "La couleur des objets"], correct: 0 },
         { q: "Quel est le contraire d'une accélération ?", a: ["Décélération", "Gravitation", "Motivation"], correct: 0 },
         { q: "Quand un bus freine brusquement...", a: ["On tombe en arrière", "On est projeté en avant", "On flotte"], correct: 1 },
-        { q: "Quel est l'effet de la gravité sur la Lune ?", a: ["6x plus faible qu’ici", "Identique à la Terre", "N’existe pas"], correct: 0 },
-        { q: "Quand deux forces opposées s’annulent ?", a: ["L’objet s’arrête ou garde son mouvement", "Il explose", "Il va en rond"], correct: 0 }
+        { q: "Quel est l'impact de la gravité sur la Lune ?", a: ["6x plus faible qu’ici", "Identique à la Terre", "N’existe pas"], correct: 0 },
+        { q: "Quand deux forces opposées s’annulent ?", a: ["L’objet s’arrête ou garde son mouvement", "Il explose", "Il va en rond"], correct: 0 },
+        { q: "La gravité existe-t-elle sur Mars ?", a: ["Oui", "Non", "Uniquement dans l'atmosphère"], correct: 0 },
+        { q: "Quel objet subit le plus d'attraction gravitationnelle ?", a: ["Un éléphant", "Une pomme", "Un astéroïde"], correct: 0 },
+        { q: "La gravité affecte-t-elle la lumière ?", a: ["Oui, elle peut la dévier", "Non, pas du tout", "Uniquement les objets solides"], correct: 0 },
+        { q: "Si la distance entre deux corps est doublée, la force gravitationnelle :", a: ["Est doublée", "Est divisée par quatre", "Reste la même"], correct: 1 },
+        { q: "Qu'arrive-t-il à un objet qui voyage à la vitesse de la lumière ?", a: ["Il ne subit aucune force", "Il ralentit", "Sa masse devient infinie"], correct: 2 }
       ];
 
       let current = 0;
       let score = 0;
       let playerName = "";
-      let participants = [];
 
       // Variables audio
       const correctAudio = new Audio("assets/correct-sound.mp3");
@@ -213,13 +221,17 @@
             showQuestion();
           } else {
             document.getElementById("quiz-box").style.display = "none";
-            document.getElementById("result").textContent = `🎉 Fin de mission, ${playerName} ! Vous avez sauvé ${score}/10 parties du bus !`;
+            document.getElementById("result").textContent = `🎉 Fin de mission, ${playerName} ! Vous avez sauvé ${score}/20 parties du bus !`;
 
-            participants.push({ name: playerName, score: score });
-            participants.sort((a, b) => b.score - a.score);
+            // Sauvegarde du score dans localStorage
+            let savedScores = JSON.parse(localStorage.getItem("scores")) || [];
+            savedScores.push({ name: playerName, score: score });
+            localStorage.setItem("scores", JSON.stringify(savedScores));
 
+            // Affichage du classement
+            savedScores.sort((a, b) => b.score - a.score);
             let rankingText = "🏆 Classement :<br>";
-            participants.forEach((participant, index) => {
+            savedScores.forEach((participant, index) => {
               rankingText += `${index + 1}. ${participant.name} - ${participant.score} points<br>`;
             });
             document.getElementById("ranking").innerHTML = rankingText;
@@ -227,3 +239,5 @@
         }, 1200);
       }
     </script>
+  </body>
+</html>
